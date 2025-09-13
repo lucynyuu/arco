@@ -1,6 +1,7 @@
 #include "arco.h"
 #include "arp.h"
 #include "fifths.h"
+#include "cord.h"
 
 static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 	Arco* self = (Arco*)instance;
@@ -47,7 +48,8 @@ static void cleanup(LV2_Handle instance) {
 static void run(LV2_Handle instance, uint32_t sample_count) {
 	Arco* self = (Arco*)instance;
 	// arco_run_arp(self, sample_count);
-	arco_run_fifths(self, sample_count);
+	// arco_run_fifths(self, sample_count);
+	arco_run_cord(self, sample_count, ARCO_MAJOR_CHORD);
 }
 
 static const void* extension_data(const char* uri) {
