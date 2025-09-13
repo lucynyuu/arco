@@ -2,15 +2,7 @@
 
 void arco_run_fifths(Arco* self, uint32_t sample_count) {
     ArcoURIs* uris = &self->uris;
-
-	// Struct for a 3 byte MIDI event, used for writing notes
-	typedef struct {
-		LV2_Atom_Event event;
-		uint8_t        msg[3];
-	} MIDINoteEvent;
-
 	// Initially self->out_port contains a Chunk with size set to capacity
-
 	// Get the capacity
 	const uint32_t out_capacity = self->out_port->atom.size;
 
@@ -31,12 +23,7 @@ void arco_run_fifths(Arco* self, uint32_t sample_count) {
 					if (msg[1] <= 127 - 7) {
 						// Make a note one 5th (7 semitones) higher than input
 						MIDINoteEvent fifth;
-
-						// Could simply do fifth.event = *ev here instead...
-						fifth.event.time.frames = ev->time.frames; // Same time
-						fifth.event.body.type   = ev->body.type;   // Same type
-						fifth.event.body.size   = ev->body.size;   // Same size
-
+						fifth.event = *ev;
 						fifth.msg[0] = msg[0];     // Same status
 						fifth.msg[1] = msg[1] + 7; // Pitch up 7 semitones
 						fifth.msg[2] = msg[2];     // Same velocity

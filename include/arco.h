@@ -30,6 +30,19 @@ typedef struct {
 
 	// URIs
 	ArcoURIs uris;
+
+	// Arp
+	int32_t sample_counter;
+	uint8_t held_note;
+	uint8_t held_velocity;
+	bool is_note_held;
+	uint32_t rate_samples;
 } Arco;
+
+// Struct for a 3 byte MIDI event, used for writing notes
+typedef struct {
+    LV2_Atom_Event event;
+    uint8_t msg[3];
+} MIDINoteEvent;
 
 #endif /* ARCO_H */
