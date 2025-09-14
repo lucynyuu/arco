@@ -9,6 +9,8 @@
         doap:name "Arco" ;
         doap:license <http://opensource.org/licenses/isc> ;
         lv2:project <http://lv2plug.in/ns/lv2> ;
+        doap:maintainer "Lucy Nyuu" ;
+        doap:developer "Lucy Nyuu" ;
         lv2:requiredFeature urid:map ;
         lv2:optionalFeature lv2:hardRTCapable ;
         lv2:port [

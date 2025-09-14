@@ -5,4 +5,5 @@
 <https://example.org/plugins/arco>
         a lv2:Plugin ;
         lv2:binary <arco.so> ;
-        rdfs:seeAlso <arco.ttl> .
+        rdfs:seeAlso <arco.ttl> ,
+        	     <arco_ui.ttl> .
