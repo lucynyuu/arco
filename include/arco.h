@@ -2,6 +2,7 @@
 #define ARCO_H
 
 #include "uris.h"
+#include "notes.h"
 
 #include "lv2/atom/atom.h"
 #include "lv2/atom/util.h"
@@ -16,6 +17,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 enum { ARCO_IN = 0, ARCO_OUT = 1 };
 
@@ -32,11 +34,10 @@ typedef struct {
 	ArcoURIs uris;
 
 	// Arp
-	int32_t sample_counter;
-	uint8_t held_note;
-	uint8_t held_velocity;
-	bool is_note_held;
-	uint32_t rate_samples;
+	float arpSpeed;
+	int currentNote, lastNoteValue;
+	int time;
+	float rate;
 } Arco;
 
 // Struct for a 3 byte MIDI event, used for writing notes

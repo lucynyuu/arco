@@ -8,10 +8,13 @@ void arco_run_cord(Arco* self, uint32_t sample_count, ArcoChordType chord_type) 
 	lv2_atom_sequence_clear(self->out_port);
 	self->out_port->atom.type = self->in_port->atom.type;
 
+	FILE *fptr;
+	fptr = fopen("/home/Nyuu/Documents/university/Y4-T1/LE-EECS-4462/A1/debugstuff.txt", "a+");
 
 	LV2_ATOM_SEQUENCE_FOREACH (self->in_port, ev) {
 		if (ev->body.type == uris->midi_Event) {
 			const uint8_t* const msg = (const uint8_t*)(ev + 1);
+			fprintf(fptr, "Status: %d\nNote: %d\nVelocity: %d\nFrames: %d\nType: %d\nSize: %d\n\n", msg[0], msg[1], msg[2], ev->time.frames, ev->body.type, ev->body.size);
 			switch (lv2_midi_message_type(msg)) {
 				case LV2_MIDI_MSG_NOTE_ON:
 				case LV2_MIDI_MSG_NOTE_OFF:
@@ -45,4 +48,5 @@ void arco_run_cord(Arco* self, uint32_t sample_count, ArcoChordType chord_type) 
 			}
 		}
 	}
+	fclose(fptr);
 }
