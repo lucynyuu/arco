@@ -27,7 +27,7 @@ void arco_run_arp(Arco* self, uint32_t sample_count) {
     }
 	lv2_atom_sequence_clear(self->out_port);
 	if((self->time + sample_count) >= noteDuration) {
-		int64_t offset = 118; // Placeholder
+		int offset = MAX(0, MIN(noteDuration - self->time, sample_count - 1));
         if (self->lastNoteValue > 0) {
 			MIDINoteEvent ev;
 			ev.event.time.frames = offset;

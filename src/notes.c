@@ -19,7 +19,6 @@ int test_note(int k) {
     return (notes[k / WORD_BITS] >> (k % WORD_BITS)) & 1U;
 }
 
-/*
 void iterate_notes() {
     for (int w = 0; w < WORDS; w++) {
         uint64_t word = notes[w];
@@ -30,12 +29,12 @@ void iterate_notes() {
             word &= word - 1;
         }
     }
-}*/
+}
 
 // THIS BAD it MUST be fixed
 int next_note_shit(int currentNote) {
     if (currentNote < 0 || currentNote >= MAX_NOTES) currentNote = -1;
-    for (int i = 1; i <= MAX_NOTES; i++) {
+    for (int i = 1; i <= MAX_NOTES; ++i) {
         int candidate = (currentNote + i) % MAX_NOTES;
         if (notes[candidate / WORD_BITS] & (1ULL << (candidate % WORD_BITS)))
             return candidate;

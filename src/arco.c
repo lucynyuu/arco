@@ -42,7 +42,7 @@ static LV2_Handle instantiate(const LV2_Descriptor* descriptor, double rate, con
 	self->currentNote = 0;
 	self->lastNoteValue = -1;
 	self->time = 0;
-	self->arpSpeed = 0.5;
+	self->arpSpeed = 0.2;
 	self->rate = (float)rate;
 
 	return (LV2_Handle)self;

@@ -4,7 +4,6 @@ void arco_run_cord(Arco* self, uint32_t sample_count, ArcoChordType chord_type) 
     ArcoURIs* uris = &self->uris;
 	const uint32_t out_capacity = self->out_port->atom.size;
 
-
 	lv2_atom_sequence_clear(self->out_port);
 	self->out_port->atom.type = self->in_port->atom.type;
 
