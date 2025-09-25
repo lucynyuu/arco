@@ -2,7 +2,7 @@
 #define ARCO_H
 
 #include "uris.h"
-#include "notes.h"
+#include "sorted_set.h"
 
 #include "lv2/atom/atom.h"
 #include "lv2/atom/util.h"
@@ -34,10 +34,11 @@ typedef struct {
 	ArcoURIs uris;
 
 	// Arp
-	float arpSpeed;
-	int currentNote, lastNoteValue;
+	float arp_speed;
+	int current_note, last_note_value;
 	int time;
 	float rate;
+	SortedSet notes;
 } Arco;
 
 // Struct for a 3 byte MIDI event, used for writing notes

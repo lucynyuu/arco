@@ -7,17 +7,17 @@ void arco_run_arp(Arco* self, uint32_t sample_count) {
     lv2_atom_sequence_clear(self->out_port);
     self->out_port->atom.type = self->in_port->atom.type;
 
-	int noteDuration = ceil(self->rate * 0.25f * (0.1f + (1.0f - (self->arpSpeed))));
+	int note_duration = ceil(self->rate * 0.25f * (0.1f + (1.0f - (self->arp_speed))));
 
     LV2_ATOM_SEQUENCE_FOREACH (self->in_port, ev) {
 		if (ev->body.type == uris->midi_Event) {
             const uint8_t* const msg = (const uint8_t*)(ev + 1);
             switch (lv2_midi_message_type(msg)) {
                 case LV2_MIDI_MSG_NOTE_ON:
-					set_note(msg[1]);
+					ss_add(&self->notes, msg[1]);
 					break;
                 case LV2_MIDI_MSG_NOTE_OFF:
-					clear_note(msg[1]);
+					ss_remove(&self->notes, msg[1]);
 					break;
                 default:
                     lv2_atom_sequence_append_event(self->out_port, out_capacity, ev);
@@ -26,32 +26,32 @@ void arco_run_arp(Arco* self, uint32_t sample_count) {
         }
     }
 	lv2_atom_sequence_clear(self->out_port);
-	if((self->time + sample_count) >= noteDuration) {
-		int offset = MAX(0, MIN(noteDuration - self->time, sample_count - 1));
-        if (self->lastNoteValue > 0) {
+	if((self->time + sample_count) >= note_duration) {
+		int offset = MAX(0, MIN(note_duration - self->time, sample_count - 1));
+        if (self->last_note_value > 0) {
 			MIDINoteEvent ev;
 			ev.event.time.frames = offset;
-			ev.event.body.type   = 27; // Placeholder
-			ev.event.body.size   = 3;  // Placeholder
+			ev.event.body.type   = 27;
+			ev.event.body.size   = 3;
 			ev.msg[0] = LV2_MIDI_MSG_NOTE_OFF;
-			ev.msg[1] = self->lastNoteValue;
+			ev.msg[1] = self->last_note_value;
 			ev.msg[2] = 0;
 			lv2_atom_sequence_append_event(self->out_port, out_capacity, &ev.event);
-            self->lastNoteValue = -1;
+            self->last_note_value = -1;
         }
-        if (sum_notes()>0) {
-			self->currentNote = next_note_shit(self->currentNote);
-            self->lastNoteValue = self->currentNote;
+        if (self->notes.size > 0) {
+			self->current_note = (self->current_note + 1) % self->notes.size;
+     		self->last_note_value = self->notes.values[self->current_note];
 
 			MIDINoteEvent ev;
 			ev.event.time.frames = offset;
-			ev.event.body.type   = 27; // Placeholder
-			ev.event.body.size   = 3;  // Placeholder
+			ev.event.body.type   = 27;
+			ev.event.body.size   = 3;
 			ev.msg[0] = LV2_MIDI_MSG_NOTE_ON;
-			ev.msg[1] = self->lastNoteValue;
+			ev.msg[1] = self->last_note_value;
 			ev.msg[2] = 127;
 			lv2_atom_sequence_append_event(self->out_port, out_capacity, &ev.event);
         }
 	}
-	self->time = (self->time + sample_count) % noteDuration;
+	self->time = (self->time + sample_count) % note_duration;
 }
