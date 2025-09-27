@@ -7,22 +7,36 @@
 typedef struct {
     NSWindow*   window;
     WKWebView*  webView;
-    NSView*     dummyView;   // what JUCE host actually sees
-    id          delegate;    // retain delegate
+    NSView*     dummyView;   // JUCE sees this
+    id          delegate;    // window delegate
 } ArcoUI;
 
-// Delegate to stop crashes when user clicks the red close button
+// --- Delegate to stop crashes when user clicks the red close button ---
 @interface ArcoWindowDelegate : NSObject <NSWindowDelegate>
 @end
 
 @implementation ArcoWindowDelegate
 - (BOOL)windowShouldClose:(NSWindow*)sender {
-    [sender orderOut:nil]; // just hide instead of destroying
-    return NO;             // don’t let Cocoa actually free it
+    [sender orderOut:nil]; // just hide, don’t free
+    return NO;
 }
 @end
 
-// Instantiate the UI
+// --- DummyView that reopens our real window when host "shows" the GUI ---
+@interface DummyView : NSView
+@property (nonatomic, assign) NSWindow* externalWindow;
+@end
+
+@implementation DummyView
+- (void)setHidden:(BOOL)hidden {
+    [super setHidden:hidden];
+    if (!hidden && self.externalWindow) {
+        [self.externalWindow makeKeyAndOrderFront:nil];
+    }
+}
+@end
+
+// --- Instantiate the UI ---
 static LV2UI_Handle instantiate(const LV2UI_Descriptor* descriptor,
         const char* plugin_uri,
         const char* bundle_path,
@@ -39,11 +53,7 @@ static LV2UI_Handle instantiate(const LV2UI_Descriptor* descriptor,
         ArcoUI* ui = (ArcoUI*)calloc(1, sizeof(ArcoUI));
         if (!ui) return NULL;
 
-        // 1. Give JUCE a tiny invisible NSView so it doesn't crash
-        ui->dummyView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
-        *widget = (LV2UI_Widget)ui->dummyView;
-
-        // 2. Create your real floating NSWindow
+        // 1. Create the real floating window
         ui->window = [[NSWindow alloc] initWithContentRect:NSMakeRect(100, 100, 400, 300)
                                                  styleMask:(NSWindowStyleMaskTitled |
                                                             NSWindowStyleMaskClosable |
@@ -53,12 +63,12 @@ static LV2UI_Handle instantiate(const LV2UI_Descriptor* descriptor,
                                                      defer:NO];
         [ui->window setTitle:@"LV2 Cocoa WebUI"];
 
-        // 3. Attach delegate to intercept "close"
+        // Attach delegate to intercept close
         ArcoWindowDelegate* delegate = [[ArcoWindowDelegate alloc] init];
         [ui->window setDelegate:delegate];
-        ui->delegate = delegate; // keep alive
+        ui->delegate = delegate;
 
-        // 4. Add WKWebView
+        // Add WKWebView inside
         WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
         ui->webView = [[WKWebView alloc] initWithFrame:[[ui->window contentView] bounds]
                                           configuration:config];
@@ -67,17 +77,23 @@ static LV2UI_Handle instantiate(const LV2UI_Descriptor* descriptor,
 
         NSString* html = @"<html><body style='font-family:sans-serif; text-align:center; margin-top:100px;'>"
                          "<h1>Hello, LV2 Window!</h1>"
-                         "<p>This is a standalone Cocoa window.</p>"
+                         "<p>This window can reopen after close.</p>"
                          "</body></html>";
         [ui->webView loadHTMLString:html baseURL:nil];
 
         [ui->window makeKeyAndOrderFront:nil];
 
+        // 2. Create DummyView for JUCE
+        DummyView* dummy = [[DummyView alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
+        dummy.externalWindow = ui->window;
+        ui->dummyView = dummy;
+        *widget = (LV2UI_Widget)dummy;
+
         return ui;
     }
 }
 
-// Cleanup
+// --- Cleanup ---
 static void cleanup(LV2UI_Handle handle) {
     @autoreleasepool {
         ArcoUI* ui = (ArcoUI*)handle;
