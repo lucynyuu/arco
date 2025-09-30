@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        @font-face {
+            font-family: 'JetBrains Mono';
+            src: url('path/to/JetBrainsMono-Regular.woff2') format('woff2'),
+                url('path/to/JetBrainsMono-Regular.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+        .slidecontainer {
+            width: 100%;
+        }
+
+        :root {
+            --slider-fill-color: #fe73ff;
+            --slider-track-color: #28282800;
+            --slider-border-color: white;
+            --slider-thumb-color: white;
+            --slider-height: 10px;
+            --slider-border-width: 2px;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: var(--slider-height);
+            /* Initial track styling */
+            background: var(--slider-track-color);
+            border-color: var(--slider-border-color);
+            border-style: solid;
+            border-radius: 15px;
+            border-width: var(--slider-border-width);
+            outline: none;
+            opacity: 1;
+            transition: opacity .2s;
+            cursor: pointer;
+            width: 50%;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--slider-thumb-color);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--slider-thumb-color);
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider::-moz-range-track {
+            background: transparent;
+            border: none;
+        }
+
+        .slider::-ms-track {
+            background: transparent;
+            border: none;
+            color: transparent;
+        }
+    </style>
+</head>
+
+<body style='font-family:"JetBrains Mono", monospace; color:white; background-color:#282828; '>
+    <h1 style='text-align: center;'><span style='color:#7fffff'>Ar</span>co</h1>
+    <div class="slidecontainer">
+        <p style='margin-left: 4px;'>Arpeggiator Speed</p>
+        <input type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="myRange">
+        <p>Value: <span id="demo">0.5</span></p>
+    </div>
+    <script>
+        var slider = document.getElementById("myRange");
+        var output = document.getElementById("demo");
+
+        function applySliderFill() {
+            const min = parseFloat(slider.min);
+            const max = parseFloat(slider.max);
+            const value = parseFloat(slider.value);
+            const percent = ((value - min) / (max - min)) * 100;
+            slider.style.backgroundImage = `linear-gradient(to right, var(--slider-fill-color) 0%, var(--slider-fill-color) ${percent}%, var(--slider-track-color) ${percent}%, var(--slider-track-color) 100%)`;
+        }
+        
+        output.innerHTML = slider.value;
+        applySliderFill();
+
+        slider.oninput = function() {
+            output.innerHTML = this.value;
+            applySliderFill();
+            window.webkit.messageHandlers.arpSpeedChanged.postMessage(Number(this.value));
+        }
+    </script>
+    
+</body>
+</html>

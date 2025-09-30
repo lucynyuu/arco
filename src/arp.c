@@ -7,7 +7,7 @@ void arco_run_arp(Arco* self, uint32_t sample_count) {
     lv2_atom_sequence_clear(self->out_port);
     self->out_port->atom.type = self->in_port->atom.type;
 
-	int note_duration = ceil(self->rate * 0.25f * (0.1f + (1.0f - (self->arp_speed))));
+	int note_duration = ceil(self->rate * 0.25f * (0.1f + (1.0f - (*self->arp_speed_port))));
 
     LV2_ATOM_SEQUENCE_FOREACH (self->in_port, ev) {
 		if (ev->body.type == uris->midi_Event) {
@@ -15,6 +15,10 @@ void arco_run_arp(Arco* self, uint32_t sample_count) {
             switch (lv2_midi_message_type(msg)) {
                 case LV2_MIDI_MSG_NOTE_ON:
 					ss_add(&self->notes, msg[1]);
+					//if(ss_size(&self->notes) == 1 && msg[1] <= 127 - 7) {
+					//	ss_add(&self->notes, msg[1] + 4);
+					//	ss_add(&self->notes, msg[1] + 7);
+					//}
 					break;
                 case LV2_MIDI_MSG_NOTE_OFF:
 					ss_remove(&self->notes, msg[1]);

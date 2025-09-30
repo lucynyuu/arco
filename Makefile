@@ -1,9 +1,9 @@
 # Makefile for Arco
 # Lucy Nyuu 2025
 
-CC = gcc
+CC = clang
 INCDIR = include
-CFLAGS = -Wall -Wextra -g -I$(INCDIR) -lm -fPIC -shared -Ilv2
+CFLAGS = -Wall -Wextra -I$(INCDIR) -lm -fPIC -shared -I./lv2-1.18.10/include
 BUILDDIR = build
 OBJDIR = $(BUILDDIR)/intermediate
 
@@ -13,17 +13,39 @@ SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
 
 # Frontend
-UI_CFLAGS = -Wall -Wextra -g -lm -fPIC -shared -Ilv2 -IX11
-UI_SRCDIR = ui
+UI_INCDIR = ui/include
+UI_CFLAGS = -Wall -Wextra -fPIC -shared -I$(UI_INCDIR) -I./lv2-1.18.10/include -ObjC -framework Cocoa -framework WebKit
+UI_SRCDIR = ui/src
 UI_TARGET = $(OBJDIR)/arco_ui.so
-UI_SRCS = $(wildcard $(UI_SRCDIR)/*.c)
+UI_SRCS = $(wildcard $(UI_SRCDIR)/*.m)
 UI_OBJS = $(patsubst $(UI_SRCDIR)/%.c,$(OBJDIR)/%.o,$(UI_SRCS))
 
 # LV2 bundle directory
 BUNDLE = $(BUILDDIR)/arco.lv2
 DATA_DIR = lv2
 
-all: $(UI_TARGET) $(BUNDLE) 
+HTML=ui/ui_debug/gui.html
+HTML_HEADER=ui/include/gui_html.h
+GUARD=GUI_HTML_H
+
+all: $(HTML_HEADER) $(UI_TARGET) $(BUNDLE) 
+
+$(HTML_HEADER): $(HTML)
+	{ \
+	  echo "#ifndef $(GUARD)"; \
+	  echo "#define $(GUARD)"; \
+	  echo; \
+	  printf "const char* const HTML_CONTENT = \""; \
+	  tr -d '\n' < $(HTML) \
+	    | sed -E 's/[[:space:]]+/ /g; \
+	              s/ *([{}();:,=<>+\-\*/]) */\1/g; \
+	              s/\\/\\\\/g; \
+	              s/\"/\\\"/g' \
+	    | tr -d '\n'; \
+	  echo "\";"; \
+	  echo; \
+	  echo "#endif // $(GUARD)"; \
+	} > $@
 
 $(BUNDLE): $(TARGET)
 	mkdir -p $(BUNDLE)
@@ -54,3 +76,4 @@ $(OBJDIR):
 clean:
 	rm -f $(TARGET) $(UI_TARGET) $(OBJDIR)/*.o
 	rm -rf $(BUNDLE)
+	rm -f $(HTML_HEADER)
