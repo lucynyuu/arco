@@ -1,6 +1,6 @@
 #include "arp.h"
 
-void arco_run_arp(Arco* self, uint32_t sample_count) {
+void arco_run_arp(Arco* self, uint32_t sample_count, ArcoChordType chord_type) {
     ArcoURIs* uris = &self->uris;
     const uint32_t out_capacity = self->out_port->atom.size;
 
@@ -19,9 +19,17 @@ void arco_run_arp(Arco* self, uint32_t sample_count) {
 					//	ss_add(&self->notes, msg[1] + 4);
 					//	ss_add(&self->notes, msg[1] + 7);
 					//}
+					if(msg[1] <= 127 - self->cord_array[chord_type][1]) {
+						ss_add(&self->notes, msg[1] + self->cord_array[chord_type][0]);
+						ss_add(&self->notes, msg[1] + self->cord_array[chord_type][1]);
+					}
 					break;
                 case LV2_MIDI_MSG_NOTE_OFF:
 					ss_remove(&self->notes, msg[1]);
+					if(msg[1] <= 127 - self->cord_array[chord_type][1]) {
+						ss_remove(&self->notes, msg[1] + self->cord_array[chord_type][0]);
+						ss_remove(&self->notes, msg[1] + self->cord_array[chord_type][1]);
+					}
 					break;
                 default:
                     lv2_atom_sequence_append_event(self->out_port, out_capacity, ev);
@@ -44,8 +52,11 @@ void arco_run_arp(Arco* self, uint32_t sample_count) {
             self->last_note_value = -1;
         }
         if (self->notes.size > 0) {
-			self->current_note = (self->current_note + 1) % self->notes.size;
-     		self->last_note_value = self->notes.values[self->current_note];
+			if (self->reverse_arp)
+				self->current_note = (self->current_note - 1 + ss_size(&self->notes)) % ss_size(&self->notes);
+			else
+				self->current_note = (self->current_note + 1) % ss_size(&self->notes);
+			self->last_note_value = ss_get(&self->notes, self->current_note);
 
 			MIDINoteEvent ev;
 			ev.event.time.frames = offset;

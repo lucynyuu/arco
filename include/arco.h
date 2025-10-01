@@ -21,6 +21,12 @@
 
 enum { ARCO_IN = 0, ARCO_OUT = 1, ARCO_CONTROL = 2 };
 
+typedef enum {
+    ARCO_MINOR_CHORD = 0,
+    ARCO_MAJOR_CHORD = 1,
+    ARCO_AUGMENTED_TRIAD = 2
+} ArcoChordType;
+
 typedef struct {
 	// Features
 	LV2_URID_Map*  map;
@@ -40,6 +46,8 @@ typedef struct {
 	int time;
 	float rate;
 	SortedSet notes;
+	bool reverse_arp;
+	int cord_array[3][2];
 } Arco;
 
 // Struct for a 3 byte MIDI event, used for writing notes

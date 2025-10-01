@@ -3,11 +3,6 @@
 
 #include "arco.h"
 
-typedef enum {
-    ARCO_MINOR_CHORD = 3,
-    ARCO_MAJOR_CHORD = 4
-} ArcoChordType;
-
-void arco_run_chord(Arco* self, uint32_t sample_count, ArcoChordType major);
+void arco_run_chord(Arco* self, uint32_t sample_count, ArcoChordType chord_type);
 
 #endif /* ARCO_CHORD_H */

@@ -15,13 +15,13 @@ void arco_run_chord(Arco* self, uint32_t sample_count, ArcoChordType chord_type)
 				case LV2_MIDI_MSG_NOTE_OFF:
 					lv2_atom_sequence_append_event(self->out_port, out_capacity, ev);
 
-					if (msg[1] <= 127 - 7) {
+					if (msg[1] <= 127 - self->cord_array[chord_type][1]) {
 						MIDINoteEvent major_third;
 						major_third.event.time.frames = ev->time.frames;
 						major_third.event.body.type   = ev->body.type;
 						major_third.event.body.size   = ev->body.size;
 						major_third.msg[0] = msg[0];
-						major_third.msg[1] = msg[1] + chord_type;
+						major_third.msg[1] = msg[1] + self->cord_array[chord_type][0];
 						major_third.msg[2] = msg[2];
 						lv2_atom_sequence_append_event(self->out_port, out_capacity, &major_third.event);
 
@@ -30,13 +30,12 @@ void arco_run_chord(Arco* self, uint32_t sample_count, ArcoChordType chord_type)
 						fifth.event.body.type   = ev->body.type;
 						fifth.event.body.size   = ev->body.size;
 						fifth.msg[0] = msg[0];
-						fifth.msg[1] = msg[1] + 7;
+						fifth.msg[1] = msg[1] + self->cord_array[chord_type][1];
 						fifth.msg[2] = msg[2];
 						lv2_atom_sequence_append_event(self->out_port, out_capacity, &fifth.event);
 					}
 					break;
 				default:
-					// Forward all other MIDI events directly
 					lv2_atom_sequence_append_event(self->out_port, out_capacity, ev);
 				break;
 			}
