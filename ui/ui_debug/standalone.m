@@ -16,7 +16,7 @@
     [self.webView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
     [[self.window contentView] addSubview:self.webView];
 
-    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html"];
+    NSString *htmlPath = [[NSBundle mainBundle] pathForResource:@"gui" ofType:@"html"];
     if (htmlPath) {
         NSURL *url = [NSURL fileURLWithPath:htmlPath];
         [self.webView loadFileURL:url allowingReadAccessToURL:[url URLByDeletingLastPathComponent]];

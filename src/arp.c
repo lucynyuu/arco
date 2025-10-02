@@ -52,7 +52,7 @@ void arco_run_arp(Arco* self, uint32_t sample_count, ArcoChordType chord_type) {
             self->last_note_value = -1;
         }
         if (self->notes.size > 0) {
-			if (self->reverse_arp)
+			if (*self->arp_reverse_port)
 				self->current_note = (self->current_note - 1 + ss_size(&self->notes)) % ss_size(&self->notes);
 			else
 				self->current_note = (self->current_note + 1) % ss_size(&self->notes);

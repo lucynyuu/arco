@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-enum { ARCO_IN = 0, ARCO_OUT = 1, ARCO_CONTROL = 2 };
+enum { ARCO_IN = 0, ARCO_OUT = 1, ARCO_CONTROL = 2, ARCO_REVERSE = 3 };
 
 typedef enum {
     ARCO_MINOR_CHORD = 0,
@@ -36,12 +36,12 @@ typedef struct {
 	const LV2_Atom_Sequence* in_port;
 	LV2_Atom_Sequence* out_port;
 	float* arp_speed_port;
+	bool* arp_reverse_port;
 
 	// URIs
 	ArcoURIs uris;
 
 	// Arp
-	float arp_speed;
 	int current_note, last_note_value;
 	int time;
 	float rate;

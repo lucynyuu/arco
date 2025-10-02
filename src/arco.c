@@ -15,6 +15,9 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 		case ARCO_CONTROL:
 			self->arp_speed_port = (float*)data;
 			break;
+		case ARCO_REVERSE:
+			self->arp_reverse_port = (bool*)data;
+			break;
 		default:
 			break;
 	}
@@ -45,7 +48,6 @@ static LV2_Handle instantiate(const LV2_Descriptor* descriptor, double rate, con
 	self->current_note = 0;
 	self->last_note_value = -1;
 	self->time = 0;
-	self->arp_speed = 0.5;
 	self->rate = (float)rate;
 
 	self->reverse_arp = false;
