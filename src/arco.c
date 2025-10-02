@@ -16,7 +16,7 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 			self->arp_speed_port = (float*)data;
 			break;
 		case ARCO_REVERSE:
-			self->arp_reverse_port = (bool*)data;
+			self->arp_reverse_port = (float*)data;
 			break;
 		default:
 			break;

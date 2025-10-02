@@ -36,7 +36,7 @@ typedef struct {
 	const LV2_Atom_Sequence* in_port;
 	LV2_Atom_Sequence* out_port;
 	float* arp_speed_port;
-	bool* arp_reverse_port;
+	float* arp_reverse_port;
 
 	// URIs
 	ArcoURIs uris;

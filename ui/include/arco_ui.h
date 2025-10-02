@@ -18,6 +18,7 @@ typedef struct {
     LV2_URID atom_Float;
 
     LV2_URID arp_speed_key;
+    LV2_URID arp_reverse_key;
 } ArcoUI;
 
 const LV2UI_Descriptor* lv2ui_descriptor(uint32_t index);

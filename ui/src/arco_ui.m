@@ -31,6 +31,7 @@ static LV2UI_Handle instantiate(const LV2UI_Descriptor* descriptor,
         if (ui->map) {
             ui->atom_Float = ui->map->map(ui->map->handle, LV2_ATOM__Float);
             ui->arp_speed_key = ui->map->map(ui->map->handle, "https://example.org/arco#arp_speed");
+            ui->arp_reverse_key = ui->map->map(ui->map->handle, "https://example.org/arco#arp_reverse");
         }
 
         ui->dummyView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];

@@ -17,6 +17,7 @@
         arco_script_handler* handler = [[arco_script_handler alloc] init];
         handler.ui = ui;
         [config.userContentController addScriptMessageHandler:handler name:@"arpSpeedChanged"];
+        [config.userContentController addScriptMessageHandler:handler name:@"arpReverse"];
 
         self.webView = [[WKWebView alloc] initWithFrame:self.window.contentView.bounds
                                           configuration:config];
