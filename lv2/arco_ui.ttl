@@ -3,7 +3,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <https://example.org/plugins/arco#ui>
-    a ui:X11UI ;
+    a ui:CocoaUI ;
     ui:binary <arco_ui.so> ;
     rdfs:label "Arco UI" .
 

@@ -19,7 +19,13 @@
 #include <stdlib.h>
 #include <math.h>
 
-enum { ARCO_IN = 0, ARCO_OUT = 1 };
+enum { ARCO_IN = 0, ARCO_OUT = 1, ARCO_CONTROL = 2, ARCO_REVERSE = 3 };
+
+typedef enum {
+    ARCO_MINOR_CHORD = 0,
+    ARCO_MAJOR_CHORD = 1,
+    ARCO_AUGMENTED_TRIAD = 2
+} ArcoChordType;
 
 typedef struct {
 	// Features
@@ -29,16 +35,19 @@ typedef struct {
 	// Ports
 	const LV2_Atom_Sequence* in_port;
 	LV2_Atom_Sequence* out_port;
+	float* arp_speed_port;
+	float* arp_reverse_port;
 
 	// URIs
 	ArcoURIs uris;
 
 	// Arp
-	float arp_speed;
 	int current_note, last_note_value;
 	int time;
 	float rate;
 	SortedSet notes;
+	bool reverse_arp;
+	int cord_array[3][2];
 } Arco;
 
 // Struct for a 3 byte MIDI event, used for writing notes

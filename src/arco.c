@@ -1,7 +1,7 @@
 #include "arco.h"
 #include "arp.h"
 #include "fifths.h"
-#include "cord.h"
+#include "chord.h"
 
 static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 	Arco* self = (Arco*)instance;
@@ -11,6 +11,12 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 			break;
 		case ARCO_OUT:
 			self->out_port = (LV2_Atom_Sequence*)data;
+			break;
+		case ARCO_CONTROL:
+			self->arp_speed_port = (float*)data;
+			break;
+		case ARCO_REVERSE:
+			self->arp_reverse_port = (float*)data;
 			break;
 		default:
 			break;
@@ -42,8 +48,15 @@ static LV2_Handle instantiate(const LV2_Descriptor* descriptor, double rate, con
 	self->current_note = 0;
 	self->last_note_value = -1;
 	self->time = 0;
-	self->arp_speed = 0.5;
 	self->rate = (float)rate;
+
+	self->reverse_arp = false;
+	self->cord_array[0][0] = 3;
+	self->cord_array[0][1] = 7;
+	self->cord_array[1][0] = 4;
+	self->cord_array[1][1] = 7;
+	self->cord_array[2][0] = 4;
+	self->cord_array[2][1] = 8;
 
 	return (LV2_Handle)self;
 }
@@ -54,9 +67,10 @@ static void cleanup(LV2_Handle instance) {
 
 static void run(LV2_Handle instance, uint32_t sample_count) {
 	Arco* self = (Arco*)instance;
-	arco_run_arp(self, sample_count);
+	// arco_run_arp(self, sample_count);
 	// arco_run_fifths(self, sample_count);
-	// arco_run_cord(self, sample_count, ARCO_MAJOR_CHORD);
+	// arco_run_chord(self, sample_count, ARCO_MAJOR_CHORD);
+	arco_run_arp(self, sample_count, ARCO_MAJOR_CHORD);
 }
 
 static const void* extension_data(const char* uri) {
