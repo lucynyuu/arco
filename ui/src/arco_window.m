@@ -22,6 +22,7 @@
         [config.userContentController addScriptMessageHandler:handler name:@"chordEnable"];
         [config.userContentController addScriptMessageHandler:handler name:@"chord"];
         [config.userContentController addScriptMessageHandler:handler name:@"octave"];
+        [config.userContentController addScriptMessageHandler:handler name:@"arpPattern"];
 
         self.webView = [[WKWebView alloc] initWithFrame:self.window.contentView.bounds
                                           configuration:config];

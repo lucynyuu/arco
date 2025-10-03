@@ -64,7 +64,7 @@ typedef struct {
 	SortedSet notes;
 	Chord chord_list[3];
 
-	int note_counter;
+	unsigned int note_counter;
 	
 	uint8_t note_count[128];
 	uint8_t note_vel[128];

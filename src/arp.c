@@ -12,15 +12,14 @@ void arco_run_arp(Arco* self, uint32_t sample_count, ArcoChordType chord_type, i
 	int note_duration = base_duration;  
 
 	if (pattern_type == 1) {
-		if (self->note_counter % 3 == 2) {
+		if (self->note_counter % 3 == 2)
 			note_duration = base_duration * 2;  
-		}
 	}
 	else if (pattern_type == 2) {
 		int step = self->note_counter % 3;
-		if (step == 0) note_duration = base_duration * 1;
-		else if (step == 1) note_duration = base_duration * 2;
-		else note_duration = base_duration * 3;
+		if (step == 0) note_duration = base_duration * 0.5;
+		else if (step == 1) note_duration = base_duration * 1;
+		else note_duration = base_duration * 1.5;
 	}
 
     LV2_ATOM_SEQUENCE_FOREACH (self->in_port, ev) {

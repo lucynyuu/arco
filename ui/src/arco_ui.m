@@ -36,9 +36,10 @@ static LV2UI_Handle instantiate(const LV2UI_Descriptor* descriptor,
             ui->chord_enable_key = ui->map->map(ui->map->handle, "https://example.org/arco#chord_enable");
             ui->chord_key = ui->map->map(ui->map->handle, "https://example.org/arco#chord");
             ui->octave_key = ui->map->map(ui->map->handle, "https://example.org/arco#octave");
+            ui->arp_pattern_key = ui->map->map(ui->map->handle, "https://example.org/arco#arp_pattern");
         }
 
-        ui->dummyView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+        ui->dummyView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)];
         *widget = (LV2UI_Widget)ui->dummyView;
 
         arco_window* arcoWin = [[arco_window alloc] initWithUI:ui htmlContent:HTML_CONTENT];
