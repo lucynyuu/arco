@@ -1,13 +1,27 @@
 #include "arp.h"
 
-void arco_run_arp(Arco* self, uint32_t sample_count, ArcoChordType chord_type) {
+void arco_run_arp(Arco* self, uint32_t sample_count, ArcoChordType chord_type, int pattern_type) {
     ArcoURIs* uris = &self->uris;
     const uint32_t out_capacity = self->out_port->atom.size;
 
     lv2_atom_sequence_clear(self->out_port);
     self->out_port->atom.type = self->in_port->atom.type;
 
-	int note_duration = ceil(self->rate * 0.25f * (0.1f + (1.0f - (*self->arp_speed_port))));
+	int base_duration = ceil(self->rate * 0.25f * (0.1f + (1.0f - (*self->arp_speed_port))));
+
+	int note_duration = base_duration;  
+
+	if (pattern_type == 1) {
+		if (self->note_counter % 3 == 2) {
+			note_duration = base_duration * 2;  
+		}
+	}
+	else if (pattern_type == 2) {
+		int step = self->note_counter % 3;
+		if (step == 0) note_duration = base_duration * 1;
+		else if (step == 1) note_duration = base_duration * 2;
+		else note_duration = base_duration * 3;
+	}
 
     LV2_ATOM_SEQUENCE_FOREACH (self->in_port, ev) {
 		if (ev->body.type == uris->midi_Event) {
@@ -67,6 +81,7 @@ void arco_run_arp(Arco* self, uint32_t sample_count, ArcoChordType chord_type) {
 			ev.msg[1] = self->last_note_value;
 			ev.msg[2] = 127;
 			lv2_atom_sequence_append_event(self->out_port, out_capacity, &ev.event);
+			++self->note_counter;
         }
 	}
 	self->time = (self->time + sample_count) % note_duration;

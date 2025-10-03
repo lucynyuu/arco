@@ -29,6 +29,8 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 			break;
 		case ARCO_OCTAVE:
 			self->octave_port = (float*)data;
+		case ARCO_ARP_PATTERN:
+			self->arp_pattern_port = (float*)data;
 		default:
 			break;
 	}
@@ -80,7 +82,7 @@ static void cleanup(LV2_Handle instance) {
 static void run(LV2_Handle instance, uint32_t sample_count) {
 	Arco* self = (Arco*)instance;
 	if(*self->arp_enable_port > 0.5f) {
-		arco_run_arp(self, sample_count, *self->chord_port);
+		arco_run_arp(self, sample_count, *self->chord_port, (int)*self->arp_pattern_port);
 	} else if (*self->chord_enable_port > 0.5f) {
 		arco_run_chord(self, sample_count, *self->chord_port);
 	} else {

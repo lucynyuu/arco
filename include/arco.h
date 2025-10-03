@@ -28,7 +28,8 @@ enum {
 	ARCO_ARP_ENABLE = 4, 
 	ARCO_CHORD_ENABLE = 5, 
 	ARCO_CHORD = 6, 
-	ARCO_OCTAVE = 7 
+	ARCO_OCTAVE = 7,
+	ARCO_ARP_PATTERN = 8
 };
 
 typedef enum {
@@ -51,6 +52,7 @@ typedef struct {
 	float* chord_enable_port;
 	float* chord_port;
 	float* octave_port;
+	float* arp_pattern_port;
 
 	// URIs
 	ArcoURIs uris;
@@ -61,6 +63,8 @@ typedef struct {
 	float rate;
 	SortedSet notes;
 	Chord chord_list[3];
+
+	int note_counter;
 	
 	uint8_t note_count[128];
 	uint8_t note_vel[128];
