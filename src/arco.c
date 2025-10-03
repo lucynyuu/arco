@@ -1,6 +1,5 @@
 #include "arco.h"
 #include "arp.h"
-#include "fifths.h"
 #include "chord.h"
 
 static void connect_port(LV2_Handle instance, uint32_t port, void* data) {

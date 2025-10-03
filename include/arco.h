@@ -66,6 +66,7 @@ typedef struct {
 
 	unsigned int note_counter;
 	
+	// Chord Gen
 	uint8_t note_count[128];
 	uint8_t note_vel[128];
 	uint8_t note_channel[128];
@@ -75,7 +76,6 @@ typedef struct {
 	uint8_t gen_vel[128];
 } Arco;
 
-// Struct for a 3 byte MIDI event, used for writing notes
 typedef struct {
     LV2_Atom_Event event;
     uint8_t msg[3];
