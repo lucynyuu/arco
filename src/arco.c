@@ -18,22 +18,29 @@ static void connect_port(LV2_Handle instance, uint32_t port, void* data) {
 		case ARCO_REVERSE:
 			self->arp_reverse_port = (float*)data;
 			break;
+		case ARCO_ARP_ENABLE:
+			self->arp_enable_port = (float*)data;
+			break;
+		case ARCO_CHORD_ENABLE:
+			self->chord_enable_port = (float*)data;
+			break;
+		case ARCO_CHORD:
+			self->chord_port = (float*)data;
+			break;
+		case ARCO_OCTAVE:
+			self->octave_port = (float*)data;
 		default:
 			break;
 	}
 }
 
 static LV2_Handle instantiate(const LV2_Descriptor* descriptor, double rate, const char* path, const LV2_Feature* const* features) {
-	// Allocate and initialise instance structure.
 	Arco* self = (Arco*)calloc(1, sizeof(Arco));
 		if (!self) {
 		return NULL;
 	}
 
-	// Scan host features for URID map
-	// clang-format off
 	const char*  missing = lv2_features_query(features, LV2_LOG__log,  &self->logger.log, false, LV2_URID__map, &self->map, true, NULL);
-	// clang-format on
 
 	lv2_log_logger_set_map(&self->logger, self->map);
 	if (missing) {
@@ -50,13 +57,18 @@ static LV2_Handle instantiate(const LV2_Descriptor* descriptor, double rate, con
 	self->time = 0;
 	self->rate = (float)rate;
 
-	self->reverse_arp = false;
-	self->cord_array[0][0] = 3;
-	self->cord_array[0][1] = 7;
-	self->cord_array[1][0] = 4;
-	self->cord_array[1][1] = 7;
-	self->cord_array[2][0] = 4;
-	self->cord_array[2][1] = 8;
+	memset(self->note_count,  0, sizeof(self->note_count));
+	memset(self->note_vel,    0, sizeof(self->note_vel));
+	memset(self->note_channel,0, sizeof(self->note_channel));
+	self->active_count = 0;
+	memset(self->gen_active,  0, sizeof(self->gen_active));
+	memset(self->gen_channel, 0, sizeof(self->gen_channel));
+	memset(self->gen_vel,     0, sizeof(self->gen_vel));
+
+
+	init_chord(&self->chord_list[0], 2, 4, 7, 0);
+	init_chord(&self->chord_list[1], 2, 3, 7, 0);
+	init_chord(&self->chord_list[2], 3, 4, 7, 10);
 
 	return (LV2_Handle)self;
 }
@@ -67,10 +79,19 @@ static void cleanup(LV2_Handle instance) {
 
 static void run(LV2_Handle instance, uint32_t sample_count) {
 	Arco* self = (Arco*)instance;
-	// arco_run_arp(self, sample_count);
-	// arco_run_fifths(self, sample_count);
-	// arco_run_chord(self, sample_count, ARCO_MAJOR_CHORD);
-	arco_run_arp(self, sample_count, ARCO_MAJOR_CHORD);
+	if(*self->arp_enable_port > 0.5f) {
+		arco_run_arp(self, sample_count, *self->chord_port);
+	} else if (*self->chord_enable_port > 0.5f) {
+		arco_run_chord(self, sample_count, *self->chord_port);
+	} else {
+		ArcoURIs* uris = &self->uris;
+		const uint32_t out_capacity = self->out_port->atom.size;
+		lv2_atom_sequence_clear(self->out_port);
+		self->out_port->atom.type = self->in_port->atom.type;
+		LV2_ATOM_SEQUENCE_FOREACH (self->in_port, ev)
+			if (ev->body.type == uris->midi_Event)
+				lv2_atom_sequence_append_event(self->out_port, out_capacity, ev);
+	}
 }
 
 static const void* extension_data(const char* uri) {

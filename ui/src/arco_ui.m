@@ -32,9 +32,13 @@ static LV2UI_Handle instantiate(const LV2UI_Descriptor* descriptor,
             ui->atom_Float = ui->map->map(ui->map->handle, LV2_ATOM__Float);
             ui->arp_speed_key = ui->map->map(ui->map->handle, "https://example.org/arco#arp_speed");
             ui->arp_reverse_key = ui->map->map(ui->map->handle, "https://example.org/arco#arp_reverse");
+            ui->arp_enable_key = ui->map->map(ui->map->handle, "https://example.org/arco#arp_enable");
+            ui->chord_enable_key = ui->map->map(ui->map->handle, "https://example.org/arco#chord_enable");
+            ui->chord_key = ui->map->map(ui->map->handle, "https://example.org/arco#chord");
+            ui->octave_key = ui->map->map(ui->map->handle, "https://example.org/arco#octave");
         }
 
-        ui->dummyView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)];
+        ui->dummyView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
         *widget = (LV2UI_Widget)ui->dummyView;
 
         arco_window* arcoWin = [[arco_window alloc] initWithUI:ui htmlContent:HTML_CONTENT];

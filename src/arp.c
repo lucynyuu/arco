@@ -12,23 +12,24 @@ void arco_run_arp(Arco* self, uint32_t sample_count, ArcoChordType chord_type) {
     LV2_ATOM_SEQUENCE_FOREACH (self->in_port, ev) {
 		if (ev->body.type == uris->midi_Event) {
             const uint8_t* const msg = (const uint8_t*)(ev + 1);
+			unsigned char num_notes = self->chord_list[chord_type].size;
             switch (lv2_midi_message_type(msg)) {
                 case LV2_MIDI_MSG_NOTE_ON:
-					ss_add(&self->notes, msg[1]);
-					//if(ss_size(&self->notes) == 1 && msg[1] <= 127 - 7) {
-					//	ss_add(&self->notes, msg[1] + 4);
-					//	ss_add(&self->notes, msg[1] + 7);
-					//}
-					if(msg[1] <= 127 - self->cord_array[chord_type][1]) {
-						ss_add(&self->notes, msg[1] + self->cord_array[chord_type][0]);
-						ss_add(&self->notes, msg[1] + self->cord_array[chord_type][1]);
+					for(int j=0;j<=*self->octave_port;++j) {
+						ss_add(&self->notes, msg[1] + (j * 12));
+						if(*self->chord_enable_port > 0.5f && msg[1] <= 127 - self->chord_list[chord_type].notes[num_notes - 1]) {
+							for(int i=0;i<num_notes;++i)
+								ss_add(&self->notes, msg[1] + self->chord_list[chord_type].notes[i] + (j * 12));
+						}
 					}
 					break;
                 case LV2_MIDI_MSG_NOTE_OFF:
-					ss_remove(&self->notes, msg[1]);
-					if(msg[1] <= 127 - self->cord_array[chord_type][1]) {
-						ss_remove(&self->notes, msg[1] + self->cord_array[chord_type][0]);
-						ss_remove(&self->notes, msg[1] + self->cord_array[chord_type][1]);
+					for(int j=0;j<=*self->octave_port;++j) {
+						ss_remove(&self->notes, msg[1] + (j * 12));
+						if(*self->chord_enable_port > 0.5f && msg[1] <= 127 - self->chord_list[chord_type].notes[num_notes - 1]) {
+							for(int i=0;i<num_notes;++i)
+								ss_remove(&self->notes, msg[1] + self->chord_list[chord_type].notes[i] + (j * 12));
+						}
 					}
 					break;
                 default:
