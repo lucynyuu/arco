@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <style>
         @font-face {
             font-family: 'JetBrains Mono';
@@ -16,6 +16,7 @@
 
         body {
             -webkit-user-select: none;
+            cursor: default;
         }
 
         :root {
@@ -25,8 +26,22 @@
             --slider-thumb-color: white;
             --slider-height: 10px;
             --slider-border-width: 2px;
+
+            --color-off: #ef4444;
+            --color-on: #10b981;
         }
 
+        /* Arp Box */
+        .arpeggiator {
+            border-radius: 10px;
+        }
+
+        /* chordgen box */
+        .chordgen {
+            border-radius: 10px;
+        }
+
+        /* Slider */
         .slider {
             -webkit-appearance: none;
             width: 100%;
@@ -39,8 +54,8 @@
             outline: none;
             opacity: 1;
             transition: opacity .2s;
-            cursor: pointer;
-            width: 50%;
+            /* cursor: pointer; */
+            width: 250px;
         }
 
         .slider:hover {
@@ -54,7 +69,7 @@
             height: 25px;
             border-radius: 50%;
             background: var(--slider-thumb-color);
-            cursor: pointer;
+            /* cursor: pointer; */
         }
 
         .slider::-moz-range-thumb {
@@ -62,7 +77,7 @@
             height: 25px;
             border-radius: 50%;
             background: var(--slider-thumb-color);
-            cursor: pointer;
+            /* cursor: pointer; */
             border: none;
         }
 
@@ -76,7 +91,191 @@
             border: none;
             color: transparent;
         }
-        
+
+        /* Arp Visualiser */
+        .dot-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .dot {
+            width: 20px;
+            height: 5px;
+            border-radius: 5px;
+            background-color: #28282800;
+            border: 2px solid white;
+            margin: 0 8px;
+            opacity: 0.3;
+            transition: background-color 0.5s, opacity 0.5s;
+        }
+        .dot.active {
+            opacity: 1;
+        }
+
+        /* Arp Direction */
+        #arp-direction .container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #arp-direction .arrow {
+            width: 0;
+            height: 0;
+            transition: filter 0.2s ease-in-out, border-bottom-color 0.2s ease-in-out, border-top-color 0.2s ease-in-out;
+            /* cursor: pointer; */
+        }
+        #arp-direction .up {
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 20px solid white;
+            background: transparent;
+        }
+        #arp-direction .down {
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 20px solid white;
+            background: transparent;
+        }
+        #arp-direction .active.up {
+            border-bottom-color: #fe73ff;
+            filter: drop-shadow(0 0 3px #fe73ff); 
+        }
+        #arp-direction .active.down {
+            border-top-color: #7fffff;
+            filter: drop-shadow(0 0 3px #7fffff);
+        }
+
+        /* power button */
+        .powerbutton {
+            height: 20px;
+            width: 20px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            /* cursor: pointer; */
+            transition: background-color 0.2s ease;
+        }
+        .powerbutton.on {
+            background-color: #fe73ff;
+            filter: drop-shadow(0 0 8px #fe73ff); 
+        }
+        #arp-box.off {
+            filter: grayscale(100%);
+            opacity: 0.6;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+        #arp-box {
+            transition: opacity 0.4s ease;
+        }
+
+        #chord-box.off {
+            filter: grayscale(100%);
+            opacity: 0.6;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+        #chord-box {
+            transition: opacity 0.4s ease;
+        }
+        #chord-gen-enable.on {
+            background-color: #7fffff;
+            filter: drop-shadow(0 0 8px #7fffff); 
+        }
+
+        #octave-control-container {
+            padding: 10px; 
+            border-radius: 12px; 
+            color: white; 
+            width: 120px; 
+            box-sizing: border-box;
+        }
+        .octave-control-row {
+            margin-top: 8px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .octave-btn {
+            user-select: none;
+            transition: transform 0.1s ease;
+        }
+        .octave-btn:active {
+            transform: scale(0.95);
+        }
+
+        #dot1 {
+            background-color: #7fffff;
+            opacity: 1;
+        }
+        #dot2 {
+            background-color: #fe73ff;
+            opacity: 1;
+        }
+        #dot3 {
+            background-color: #7fffff;
+            opacity: 1;
+        }
+
+        .arp_pattern input[type="radio"] {
+            display: none;
+        }
+
+        .arp_pattern label {
+            text-align: center;
+            display: inline-block;
+            width: 200px;
+            height: 20px;
+            margin: 2px;
+            border: 2px solid #666;
+            border-radius: 4px;
+            background-color: #ccc00000;
+            color: white;
+            user-select: none;
+            transition: background 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .arp_pattern input[type="radio"]:checked + label {
+            color: white;
+            background: #fe73ff;
+            border-color: #fe73ff;
+            box-shadow: 0 0 4px #fe73ff;
+        }
+
+        .chord_selection input[type="radio"] {
+            display: none;
+        }
+
+        .chord_selection label {
+            display: flex;
+            align-items: center;
+            margin: -5px 0;
+            color: white;
+        }
+
+        .chord_selection label::before {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-right: 8px;
+            border-radius: 50%;
+            border: 2px solid #888;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+
+        .chord_selection input[type="radio"]:checked + label::before {
+            background: #7fffff;
+            border-color: #7fffff;
+            box-shadow: 0 0 4px #7fffff;
+        }
+
     </style>
 </head>
 
@@ -84,165 +283,208 @@
     <h1 style='text-align: center; margin: -5px;' id="title"><span style='color:#7fffff'>Ar</span>co</h1>
     <a for="title" style="color: #fe73ff; position: fixed; top: 23px; right: 15px;">by Nyuu</a>
     <hr style="height: 2px; background-color: white; border: none; margin: 5px;">
-    <div class="slidecontainer" style="position: fixed; top: 40px; left: 15px">
-        <p style="position: absolute; top: 12px; left: 2px;">Arpeggiator Speed</p>
-        <input style="position: absolute; top: 55px; z-index: 10;" type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="myRange">
-        <img style="position: absolute; top: 76px; left: 2px; filter: invert(100%); width: 20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAACXBIWXMAAAsTAAALEwEAmpwYAAADFElEQVR4nO2aW4hNURjHfzITNUKTXBJKTHjgxWUeMKbMg9LwNAoPkzIlJcatSHJJbpFckgc1zYtSLvE0aVzK0BSlSVHGiTQOM4wMZ3I7tOrbddr2WWfvc/bae0+tX31vc9b3/b/zrfWtb50Bi8VisVgsFovFEifTgSagBegEPgIZ4BfwCXgB3AAOAIuB4QxByoFG4CHwN6CphBwHpjJEWAe8KUKo21QFnAcqSSgTgbYQhLqtD6gnYVQDaQNiHcsCx4BhJIA64JtBsbl2Oe5DrTpCsY5diHPPpiMW69gpoB24DyyKSnBbTGLd1q1pjZuBR0A/8FUStKYYsWsTINSxLx7xzQC6NJ+5BVT4FVseUp8N6/Te4opvHtDr47N3gTI/ghsTIFTZd2C9K7Y5clPzu8ZBP4I7EiD2GTDbFddMoCfgOhlgQqFBIBtzCZ8FRrriqgLeFbnmbp3gphjFPgeWesQ0q4hvNtfu6QS3xCD0M7BDDks89uz7Etfv0QnujFDoIHBCMy3VyTxdqp8fOsEfIuqrR4FJeWJQrWQf8Dskf2md4IxBoa+AncBojf+5wOOQ/V7XCQ4rq46pBLYCywqMfpNlUvpjING1Xg5rgFRIDgaAq/IyMkaXXfm2D8klI+i+3AuMB5o1rXR/Pse6e6nflqL650qPHkqeVnNOLvxBfb0G5rvWWwjclvVUwu8AK3QBBBGsFnwAnJbJRHuTcR1G9TKFZUtIbL7DLhA1kjlHUEqumDeBi8AuYJXceIK8SKi/XQ5ckrerUqroKTCOBDIWWC2JCnLR11mHrJsIRslJeFhaStgnfbv4iIUKYAGwSdpIlwGBbttuWlAVsARoALbKo5o69d4aFpbPVNUY41pMonSmTvRppgSXAUekscctNLKyRspajYo/EyDWeFnnUmtYiLpSvoy7rHPZY2hPPpGhv1Ie/PuSUNZIYLog1M8wJ4Er8iDeLcEPys+hvTIWql56BtgATOF/GpJS1v0FgtgYoq9WH09BxtmWZ6JJyeUjTEbIfwZ4vboMyBawWCwWi8VisVgsRM8/YeqerRyQs5YAAAAASUVORK5CYII=" alt="turtle">
-        <img style="position: absolute; top: 78px; left: 50%; margin-left: -12px; filter: invert(100%); width: 18px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAD+0lEQVR4nO2Za4hVVRTHf2o55SsdqTDfk1mUTGEEijaSKcgoxUh+EMMSZDQoHEJwAukFIYoPGkQtQfzQiC9wUFN6YeMTFfzQh2YMJRJiMB9Z6czUOHNlw//A6TL3nL3v2efeGfAPC+69e+2z7//stdZea224j//hYeAr4HegBTgGrAKeoJfhbSDTjXQAB4EKegnKgbYcZAL5GnieXoCXgF9iyHQCnwMD6OF4EFgGXIwhdAl4mR6CGcC3QDPwPVAHvA48BPQFKoFvgK4I/6mmB6Alxx/8G9gZ8odnge1Aew79z4A+xSLRF2iNMR8j3wHTNGe0CHaGxhuAVygyNlgQyci09gFPat4UmeRcfR8mEzsEXNYL+gv4Wb8tBwanSaQ/8KUlmYxM62OgRPONOb0H3LCYew1YkrYJGtM5LOe1IWSCwyxgh8NLyEj2KJikisf0hs9ERCof0qiUqCAYA9SIVBpkDgD9KDCmyWl971ItRcILQD1w1xORdmASRcRVzyZWNNx0+KN1wDPA5hzjXT53ZYDS+NnAAqAKeBV4EZgIlOnz49K/4EBkiOYMidD5JGmKMl8n9L+OzrnNgUi15iyP0DmVLwmTfp/Pw55NpWgw2XHenZjxX/NJSb5I4Jjm5B+rZ9V7dPhmFxKPAic9LGrMCiWBP3kissOWxEDgnKdFu7Ky3h8TPq8FGGdLpMGjGWSU7Zr6Pgga7wLXHZ9xF9itGscKizyTCOQfYF5onRJFwTrgOHAFuCVdU5v8JqvYqnR+FA4Y6PkU7k52FaKJ907KJMLR7AiwUnVKuQ7RUkVKs1uDkhDxFVV8yMZ8SYxNuPBHwBvAYuADnRu5ui42MsN3L9dWjFlko49Mp9HxWadJgHUJiZjW6V5FmQ/V8gk3HVZktYWizp3pSYjsS8HOb+mqIWge1FrM2UtCHE3Rcc8o9Tc7cyJGd2G+BCYAm4DbKRIxskbrVcbovZYPiRqH2iKp/Ak8IDP7z2eDYX6BCITF7D4xdypHXImcLSKRyxE6t3W6WyOuCvMtf8i0Blm0WitciCQ5dV2lS1k1ikpx+p+6EMlVwk5Vp9AXiQ4FlQBmV8YDbykTbkt6so/QHXn4AU2hMV9E9gNvKnd6uhv7Hw5syWqvduiFGtJWGKcr5M6s+roqRTNrUy9gra7oArzfje4d5WlLbbvxpaoJHtH39QX0nfrQ1fXhCN0mWYoTTheISCDGX1G3MkrP1OxOSDtdyZabFm3SwCxN88IaPxSYSLvW7WehG5i/dbV4zLJ+SCqtwGqt+1yE3lVVnnlhsM6UWYpkc4CZ6rRPVsOgTMSDz09pPJDpmh+WCo0Z/XA4NqE4mGeuDsz4SGBovgR6Be4B6ePwkgIqcPUAAAAASUVORK5CYII=" alt="rabbit">
-        <div style="position: absolute; top: 63px; left: 15px; text-align:center; font-size:40px; letter-spacing:10px; font-family:sans-serif" id="pulse-dots">
-            <style>
-                .dot-container {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 20px;
-                }
-
-                .dot {
-                    width: 20px;
-                    height: 5px;
-                    border-radius: 5px;
-                    background-color: #28282800;
-                    border: 2px solid white;
-                    margin: 0 12px;
-                    opacity: 0.3;
-                    transition: background-color 0.5s, opacity 0.5s;
-                }
-                .dot.active {
-                    opacity: 1;
-                }
-            </style>
-
-            <div class="dot-container">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            
-            <script>
-                (function() {
-                    const dots = document.querySelectorAll("#pulse-dots .dot");
-                    const slider = document.getElementById("myRange");
-                    const colors = ["#7fffff", "#fe73ff"];
-                    let current = 0, colorToggle = 0, timer;
-                    let direction = 1; 
-
-                    function resetDots() {
-                        dots.forEach(dot => {
-                            dot.classList.remove("active");
-                            dot.style.backgroundColor = "#28282800";
-                        });
-                    }
-
-                    function cycle() {
-                        resetDots();
-
-                        const stepTime = (48000/50) * 0.25 * (0.1 + (1.0 - slider.value));
-
-                        const fadeTime = Math.max(50, stepTime * 1.5); 
-                        dots.forEach(dot => {
-                            dot.style.transition = `background-color ${fadeTime}ms, opacity ${fadeTime}ms`;
-                        });
-
-                        dots[current].classList.add("active");
-                        dots[current].style.backgroundColor = colors[colorToggle];
-
-                        current += window.arpDirection || 1;
-
-                        if (current >= dots.length || current < 0) {
-                            colorToggle = 1 - colorToggle;
-                            if ((window.arpDirection || 1) === 1) {
-                                current = 0;
-                            } else {
-                                current = dots.length - 1;
-                            }
+    <div class="arpeggiator" id="arp-box" style="position: fixed; border: solid 2px white; width: 300px; height: 310px; left: 15px; top: 70px;">
+        <div style="pointer-events: all; text-align: center; position: absolute; left: 25px; top: -12px; background-color: #282828; width: 160px; height: 20px; z-index: 5;">
+            <span class="powerbutton" id="arp-enable">⏻</span>&nbsp;Arpeggiator
+        </div>
+        <div class="slidecontainer" style="position: absolute; top: -10px; left: 10px">
+            <p style="position: absolute; top: 12px; left: 2px;">Speed</p>
+            <input style="position: absolute; top: 55px; z-index: 10;" type="range" min="0" max="1" value="0.5" step="0.01" class="slider" id="myRange">
+            <img style="position: absolute; top: 76px; left: 2px; filter: invert(100%); width: 20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAACXBIWXMAAAsTAAALEwEAmpwYAAADFElEQVR4nO2aW4hNURjHfzITNUKTXBJKTHjgxWUeMKbMg9LwNAoPkzIlJcatSHJJbpFckgc1zYtSLvE0aVzK0BSlSVHGiTQOM4wMZ3I7tOrbddr2WWfvc/bae0+tX31vc9b3/b/zrfWtb50Bi8VisVgsFovFEifTgSagBegEPgIZ4BfwCXgB3AAOAIuB4QxByoFG4CHwN6CphBwHpjJEWAe8KUKo21QFnAcqSSgTgbYQhLqtD6gnYVQDaQNiHcsCx4BhJIA64JtBsbl2Oe5DrTpCsY5diHPPpiMW69gpoB24DyyKSnBbTGLd1q1pjZuBR0A/8FUStKYYsWsTINSxLx7xzQC6NJ+5BVT4FVseUp8N6/Te4opvHtDr47N3gTI/ghsTIFTZd2C9K7Y5clPzu8ZBP4I7EiD2GTDbFddMoCfgOhlgQqFBIBtzCZ8FRrriqgLeFbnmbp3gphjFPgeWesQ0q4hvNtfu6QS3xCD0M7BDDks89uz7Etfv0QnujFDoIHBCMy3VyTxdqp8fOsEfIuqrR4FJeWJQrWQf8Dskf2md4IxBoa+AncBojf+5wOOQ/V7XCQ4rq46pBLYCywqMfpNlUvpjING1Xg5rgFRIDgaAq/IyMkaXXfm2D8klI+i+3AuMB5o1rXR/Pse6e6nflqL650qPHkqeVnNOLvxBfb0G5rvWWwjclvVUwu8AK3QBBBGsFnwAnJbJRHuTcR1G9TKFZUtIbL7DLhA1kjlHUEqumDeBi8AuYJXceIK8SKi/XQ5ckrerUqroKTCOBDIWWC2JCnLR11mHrJsIRslJeFhaStgnfbv4iIUKYAGwSdpIlwGBbttuWlAVsARoALbKo5o69d4aFpbPVNUY41pMonSmTvRppgSXAUekscctNLKyRspajYo/EyDWeFnnUmtYiLpSvoy7rHPZY2hPPpGhv1Ie/PuSUNZIYLog1M8wJ4Er8iDeLcEPys+hvTIWql56BtgATOF/GpJS1v0FgtgYoq9WH09BxtmWZ6JJyeUjTEbIfwZ4vboMyBawWCwWi8VisVgsRM8/YeqerRyQs5YAAAAASUVORK5CYII=" alt="turtle">
+            <img style="position: absolute; top: 78px; left: 250px; margin-left: -12px; filter: invert(100%); width: 18px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAD+0lEQVR4nO2Za4hVVRTHf2o55SsdqTDfk1mUTGEEijaSKcgoxUh+EMMSZDQoHEJwAukFIYoPGkQtQfzQiC9wUFN6YeMTFfzQh2YMJRJiMB9Z6czUOHNlw//A6TL3nL3v2efeGfAPC+69e+2z7//stdZea224j//hYeAr4HegBTgGrAKeoJfhbSDTjXQAB4EKegnKgbYcZAL5GnieXoCXgF9iyHQCnwMD6OF4EFgGXIwhdAl4mR6CGcC3QDPwPVAHvA48BPQFKoFvgK4I/6mmB6Alxx/8G9gZ8odnge1Aew79z4A+xSLRF2iNMR8j3wHTNGe0CHaGxhuAVygyNlgQyci09gFPat4UmeRcfR8mEzsEXNYL+gv4Wb8tBwanSaQ/8KUlmYxM62OgRPONOb0H3LCYew1YkrYJGtM5LOe1IWSCwyxgh8NLyEj2KJikisf0hs9ERCof0qiUqCAYA9SIVBpkDgD9KDCmyWl971ItRcILQD1w1xORdmASRcRVzyZWNNx0+KN1wDPA5hzjXT53ZYDS+NnAAqAKeBV4EZgIlOnz49K/4EBkiOYMidD5JGmKMl8n9L+OzrnNgUi15iyP0DmVLwmTfp/Pw55NpWgw2XHenZjxX/NJSb5I4Jjm5B+rZ9V7dPhmFxKPAic9LGrMCiWBP3kissOWxEDgnKdFu7Ky3h8TPq8FGGdLpMGjGWSU7Zr6Pgga7wLXHZ9xF9itGscKizyTCOQfYF5onRJFwTrgOHAFuCVdU5v8JqvYqnR+FA4Y6PkU7k52FaKJ907KJMLR7AiwUnVKuQ7RUkVKs1uDkhDxFVV8yMZ8SYxNuPBHwBvAYuADnRu5ui42MsN3L9dWjFlko49Mp9HxWadJgHUJiZjW6V5FmQ/V8gk3HVZktYWizp3pSYjsS8HOb+mqIWge1FrM2UtCHE3Rcc8o9Tc7cyJGd2G+BCYAm4DbKRIxskbrVcbovZYPiRqH2iKp/Ak8IDP7z2eDYX6BCITF7D4xdypHXImcLSKRyxE6t3W6WyOuCvMtf8i0Blm0WitciCQ5dV2lS1k1ikpx+p+6EMlVwk5Vp9AXiQ4FlQBmV8YDbykTbkt6so/QHXn4AU2hMV9E9gNvKnd6uhv7Hw5syWqvduiFGtJWGKcr5M6s+roqRTNrUy9gra7oArzfje4d5WlLbbvxpaoJHtH39QX0nfrQ1fXhCN0mWYoTTheISCDGX1G3MkrP1OxOSDtdyZabFm3SwCxN88IaPxSYSLvW7WehG5i/dbV4zLJ+SCqtwGqt+1yE3lVVnnlhsM6UWYpkc4CZ6rRPVsOgTMSDz09pPJDpmh+WCo0Z/XA4NqE4mGeuDsz4SGBovgR6Be4B6ePwkgIqcPUAAAAASUVORK5CYII=" alt="rabbit">
+            <div style="position: absolute; top: 63px; left: 10px; text-align:center; font-size:40px; letter-spacing:10px; font-family:sans-serif" id="pulse-dots">
+                <div class="dot-container">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <script>
+                    (function() {
+                        const dots = document.querySelectorAll("#pulse-dots .dot");
+                        const slider = document.getElementById("myRange");
+                        const colors = ["#7fffff", "#fe73ff"];
+                        let current = 0, colorToggle = 0, timer;
+                        let direction = 1; 
+                        function resetDots() {
+                            dots.forEach(dot => {
+                                dot.classList.remove("active");
+                                dot.style.backgroundColor = "#28282800";
+                            });
                         }
+                        function cycle() {
+                            resetDots();
+                            const stepTime = (48000/50) * 0.25 * (0.1 + (1.0 - slider.value));
+                            const fadeTime = Math.max(50, stepTime * 1.5); 
+                            dots.forEach(dot => {
+                                dot.style.transition = `background-color ${fadeTime}ms, opacity ${fadeTime}ms`;
+                            });
+                            dots[current].classList.add("active");
+                            dots[current].style.backgroundColor = colors[colorToggle];
+                            current += window.arpDirection || 1;
+                            if (current >= dots.length || current < 0) {
+                                colorToggle = 1 - colorToggle;
+                                if ((window.arpDirection || 1) === 1) {
+                                    current = 0;
+                                } else {
+                                    current = dots.length - 1;
+                                }
+                            }
+                            timer = setTimeout(cycle, stepTime);
+                        }
+                        window.arpAnimation = {
+                            start() {
+                                if (!timer) {
+                                    cycle();
+                                }
+                            },
+                            stop() {
+                                clearTimeout(timer);
+                                timer = null;
+                                resetDots();
+                            }
+                        };
 
-                        timer = setTimeout(cycle, stepTime);
+                        window.arpAnimation.stop();
+                    })();
+                </script>
+            </div>
+            <p style="color: #00000000;">Value: <span id="demo">0.5</span></p>
+        </div>
+        <div id="arp-direction" style="position: fixed; top: 175px; display:inline-block; padding:5px 10px;">
+            <div class="container">
+                <span>Direction</span>
+                <div class="arrow up active"></div>
+                <div class="arrow down"></div>
+            </div>
+            <script>
+                (function(){
+                    const root = document.querySelector('#arp-direction');
+                    const up = root.querySelector('.up');
+                    const down = root.querySelector('.down');
+                    window.arpDirection = 1;
+                    function select(dir) {
+                        up.classList.remove('active');
+                        down.classList.remove('active');
+                        if (dir === "up") {
+                            up.classList.add('active');
+                            window.arpDirection = 1;
+                            window.webkit.messageHandlers.arpReverse.postMessage(Number(0));
+                        } else {
+                            down.classList.add('active');
+                            window.arpDirection = -1;
+                            window.webkit.messageHandlers.arpReverse.postMessage(Number(1));
+                        }
                     }
-
-                    cycle();
+                    up.addEventListener('click', () => select("up"));
+                    down.addEventListener('click', () => select("down"));
                 })();
             </script>
         </div>
-        <p style="color: #00000000;">Value: <span id="demo">0.5</span></p>
-        <!--input type="checkbox" id="arp_reverse">
-        <label for="arp_reverse">Arp Direction</label-->
-    </div>
-
-    <div id="arp-direction" style="position: fixed; top: 160px; display:inline-block; padding:5px 10px;">
-        <style>
-            #arp-direction .container {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            #arp-direction .arrow {
-                width: 0;
-                height: 0;
-                cursor: pointer;
-            }
-            #arp-direction .up {
-                border-left: 12px solid transparent;
-                border-right: 12px solid transparent;
-                border-bottom: 20px solid white;
-                background: transparent;
-            }
-            #arp-direction .down {
-                border-left: 12px solid transparent;
-                border-right: 12px solid transparent;
-                border-top: 20px solid white;
-                background: transparent;
-            }
-            #arp-direction .active.up {
-                border-bottom-color: #fe73ff;
-            }
-            #arp-direction .active.down {
-                border-top-color: #7fffff;
-            }
-        </style>
-
-        <div class="container">
-            <span>Arpeggiator Direction</span>
-            <div class="arrow up active"></div>
-            <div class="arrow down"></div>
-        </div>
-
-        <script>
-            (function(){
-                const root = document.querySelector('#arp-direction');
-                const up = root.querySelector('.up');
-                const down = root.querySelector('.down');
-
-                window.arpDirection = 1;
-
-                function select(dir) {
-                    up.classList.remove('active');
-                    down.classList.remove('active');
-                    if (dir === "up") {
-                        up.classList.add('active');
-                        window.arpDirection = 1;
-                        window.webkit.messageHandlers.arpReverse.postMessage(Number(0));
-                    } else {
-                        down.classList.add('active');
-                        window.arpDirection = -1;
-                        window.webkit.messageHandlers.arpReverse.postMessage(Number(1));
+        <div id="octave-control-container" style="position: absolute; top: 140px; left: 0px;">
+            <div style="position: relative;">
+                <span class="octave-label">Octaves</span>
+                <br>
+                <div class="octave-control-row" style="position: relative; left: 90px; top: -38px">
+                    <span class="octave-btn" onclick="changeOctave(-1)"  style="color:#7fffff; font-size: 32px;" aria-label="Decrease Octave">-</span>
+                    <span id="octaves" style="font-size: 25px; font-weight: 700;">0</span>
+                    <span class="octave-btn" onclick="changeOctave(1)" style="color:#fe73ff; font-size: 32px;" aria-label="Increase Octave">+</span>
+                </div>
+            </div>
+            <script>
+                function changeOctave(delta) {
+                    const octaveElement = document.getElementById('octaves');
+                    let currentOctave = parseInt(octaveElement.innerText);
+                    let newOctave = currentOctave + delta;
+                    const MIN_OCTAVE = 0;
+                    const MAX_OCTAVE = 4;
+                    
+                    if (newOctave >= MIN_OCTAVE && newOctave <= MAX_OCTAVE) {
+                        octaveElement.innerText = newOctave;
+                        window.webkit.messageHandlers.octave.postMessage(Number(newOctave));
                     }
                 }
-                
-                up.addEventListener('click', () => select("up"));
-                down.addEventListener('click', () => select("down"));
-            })();
-        </script>
+            </script>
+        </div>
+        <div style="position: absolute; top: 170px; left: 25px;">
+            <div class="dot-container" style="width: 200px;">
+                    <div class="dot" id="dot1"></div>
+                    <div class="dot" id="dot2"></div>
+                    <div class="dot" id="dot3"></div>
+            </div>
+            <div class="arp_pattern" style="position: absolute; top: 40px; left: 18px;">
+                <input type="radio" id="pat1" name="pattern" value="0" checked="checked" onchange="pattern0(); window.webkit.messageHandlers.arpPattern.postMessage(Number(0));">
+                <label for="pat1">None</label><br>
+                <input type="radio" id="pat2" name="pattern" value="1" onchange="pattern1(); window.webkit.messageHandlers.arpPattern.postMessage(Number(1));">
+                <label for="pat2">Pattern 1</label><br>
+                <input type="radio" id="pat3" name="pattern" value="2" onchange="pattern2(); window.webkit.messageHandlers.arpPattern.postMessage(Number(2));">
+                <label for="pat3">Pattern 2</label><br>
+            </div> 
+            <script>
+                const dot1 = document.getElementById("dot1");
+                const dot2 = document.getElementById("dot2");
+                const dot3 = document.getElementById("dot3");
+                function pattern0() {
+                    dot1.style.width = "20px";
+                    dot2.style.width = "20px";
+                    dot3.style.width = "20px";
+                }
+                function pattern1() {
+                    dot1.style.width = "20px";
+                    dot2.style.width = "20px";
+                    dot3.style.width = "40px";
+                }
+                function pattern2() {
+                    dot1.style.width = "10px";
+                    dot2.style.width = "20px";
+                    dot3.style.width = "30px";
+                }
+            </script>
+        </div>
     </div>
-
-    
+    <div class="chordgen" id="chord-box" style="position: fixed; border: solid 2px white; width: 250px; height: 310px; left: 330px; top: 70px;">
+        <div style="pointer-events: all; text-align: center; position: absolute; left: 25px; top: -12px; background-color: #282828; width: 140px; height: 20px; z-index: 5;">
+            <span class="powerbutton" id="chord-gen-enable">⏻</span>&nbsp;Chord Gen
+        </div>
+        <div class="chord_selection" style="position: absolute; top: 23px; left: 20px;">
+            <input type="radio" id="major" name="chord" value="0" checked="checked" onchange="window.webkit.messageHandlers.chord.postMessage(Number(0));">
+            <label for="major">Major</label><br>
+            <input type="radio" id="minor" name="chord" value="1" onchange="window.webkit.messageHandlers.chord.postMessage(Number(1));">
+            <label for="minor">Minor</label><br>
+            <input type="radio" id="additional" name="chord" value="2" onchange="window.webkit.messageHandlers.chord.postMessage(Number(2));">
+            <label for="additional">Seventh</label><br>
+        </div>
+    </div>
     <script>
+        const arpEnableButton = document.getElementById("arp-enable");
+        const arpEnableBox = document.getElementById("arp-box");
+        const chordEnableButton = document.getElementById("chord-gen-enable");
+        const chordEnableBox = document.getElementById("chord-box");
+        arpEnableBox.classList.add("off");
+        arpEnableButton.addEventListener("click", function() {
+            this.classList.toggle("on");
+            arpEnableBox.classList.toggle("off");
+            if (arpEnableBox.classList.contains("off")) {
+                window.arpAnimation.stop();
+                window.webkit.messageHandlers.arpEnable.postMessage(Number(0));
+            } else {
+                window.arpAnimation.start();
+                window.webkit.messageHandlers.arpEnable.postMessage(Number(1));
+            }
+        });
+        chordEnableBox.classList.add("off");
+        chordEnableButton.addEventListener("click", function() {
+            this.classList.toggle("on");
+            chordEnableBox.classList.toggle("off");
+            if (chordEnableBox.classList.contains("off"))
+                window.webkit.messageHandlers.chordEnable.postMessage(Number(0));
+            else 
+                window.webkit.messageHandlers.chordEnable.postMessage(Number(1));
+        });
+        
         var slider = document.getElementById("myRange");
         var output = document.getElementById("demo");
-
         function applySliderFill() {
             const min = parseFloat(slider.min);
             const max = parseFloat(slider.max);
@@ -250,10 +492,8 @@
             const percent = ((value - min) / (max - min)) * 100;
             slider.style.backgroundImage = `linear-gradient(to right, var(--slider-fill-color) 0%, var(--slider-fill-color) ${percent}%, var(--slider-track-color) ${percent}%, var(--slider-track-color) 100%)`;
         }
-        
         output.innerHTML = slider.value;
         applySliderFill();
-
         slider.oninput = function() {
             output.innerHTML = this.value;
             applySliderFill();

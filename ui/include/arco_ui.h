@@ -19,6 +19,11 @@ typedef struct {
 
     LV2_URID arp_speed_key;
     LV2_URID arp_reverse_key;
+    LV2_URID arp_enable_key;
+    LV2_URID chord_enable_key;
+    LV2_URID chord_key;
+    LV2_URID octave_key;
+    LV2_URID arp_pattern_key;
 } ArcoUI;
 
 const LV2UI_Descriptor* lv2ui_descriptor(uint32_t index);

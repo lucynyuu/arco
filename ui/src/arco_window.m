@@ -18,6 +18,11 @@
         handler.ui = ui;
         [config.userContentController addScriptMessageHandler:handler name:@"arpSpeedChanged"];
         [config.userContentController addScriptMessageHandler:handler name:@"arpReverse"];
+        [config.userContentController addScriptMessageHandler:handler name:@"arpEnable"];
+        [config.userContentController addScriptMessageHandler:handler name:@"chordEnable"];
+        [config.userContentController addScriptMessageHandler:handler name:@"chord"];
+        [config.userContentController addScriptMessageHandler:handler name:@"octave"];
+        [config.userContentController addScriptMessageHandler:handler name:@"arpPattern"];
 
         self.webView = [[WKWebView alloc] initWithFrame:self.window.contentView.bounds
                                           configuration:config];
